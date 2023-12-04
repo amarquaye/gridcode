@@ -1,22 +1,13 @@
-import os
 import csv
-import pathlib
+import os
+import sys
 
-
-# Decalre a path 
-folder = pathlib.Path.home() / "Documents" / "GRIDCODE" / "AMS"
-# Create the path or folder 
-create_folder = os.mkdir(folder)
-# Create the assests.csv file 
-db = os.path.join(folder, "assets.csv")
 
 class AssetManagementSystem:
 
     def __init__(self):
         # Check if the file exists
-        # self.file_exists = os.path.isfile(db)
-
-        
+        self.file_exists = os.path.isfile('assets.csv')
 
         # Open the CSV file in append mode
         self.fieldnames = ['ID', 'SN', 'CATEGORY', 'TYPE', 'LOCATION', 'DESCRIPTION', 'COLOR', 'STATUS']
@@ -24,7 +15,7 @@ class AssetManagementSystem:
 
     def get_last_asset_id(self):
         try:
-            with open(db, 'r', newline='') as csvfile:
+            with open('assets.csv', 'r', newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 rows = list(reader)
                 if rows:
@@ -63,7 +54,7 @@ class AssetManagementSystem:
         status = input("Enter asset status: ")
         status = status.upper().strip()
 
-        with open(db, 'a', newline='') as csvfile:
+        with open('assets.csv', 'a', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
 
             # Write header only if it hasn't been printed yet
@@ -79,7 +70,7 @@ class AssetManagementSystem:
 
     def read_assets(self):
         try:
-            with open(db, newline='') as csvfile:
+            with open('assets.csv', newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 print("\nList of Assets:")
                 for row in reader:
@@ -99,7 +90,7 @@ class AssetManagementSystem:
         updated = False
 
         try:
-            with open(db, 'r', newline='') as csvfile:
+            with open('assets.csv', 'r', newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
 
                 for row in reader:
@@ -109,7 +100,7 @@ class AssetManagementSystem:
                     rows.append(row)
 
             if updated:
-                with open(db, 'w', newline='') as csvfile:
+                with open('assets.csv', 'w', newline='') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
                     writer.writeheader()
                     writer.writerows(rows)
@@ -127,7 +118,7 @@ class AssetManagementSystem:
         deleted = False
 
         try:
-            with open(db, 'r', newline='') as csvfile:
+            with open('assets.csv', 'r', newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
 
                 for row in reader:
@@ -137,7 +128,7 @@ class AssetManagementSystem:
                         rows.append(row)
 
             if deleted:
-                with open(db, 'w', newline='') as csvfile:
+                with open('assets.csv', 'w', newline='') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
                     writer.writeheader()
                     writer.writerows(rows)
@@ -154,7 +145,7 @@ def main():
     asset_system = AssetManagementSystem()
 
     while True:
-        print("Asset Management System")
+        print("\nAsset Management System")
         print("1. Create Asset")
         print("2. Read Assets")
         print("3. Update Asset")
@@ -172,8 +163,17 @@ def main():
         elif choice == '4':
             asset_system.delete_asset()
         elif choice == '5':
-            print("Exiting the Asset Management System. Goodbye!")
-            break
+
+            confirm = input("Are you sure you want to exit this application?[Y/N] ")
+            if confirm.upper() == "Y":
+                print("Exiting the Asset Management System. Goodbye!\n")
+                print("AMS, powered by GridCode.")
+                sys.exit()
+            elif confirm.upper() == "N":
+                main()
+            else:
+                print(f"Invalid response, {confirm}\n")
+                main()
         else:
             print("Invalid choice. Please enter a number between 1 and 5.\n")
 
