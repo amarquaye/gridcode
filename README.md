@@ -56,6 +56,7 @@ delete_asset(self): Allows users to delete a specific asset.
 ```python
 import csv
 import os
+import sys
 
 class AssetManagementSystem:
     def __init__(self):
