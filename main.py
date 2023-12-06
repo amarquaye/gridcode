@@ -10,7 +10,15 @@ class AssetManagementSystem:
         self.file_exists = os.path.isfile('assets.csv')
 
         # Open the CSV file in append mode
-        self.fieldnames = ['ID', 'SN', 'CATEGORY', 'TYPE', 'LOCATION', 'DESCRIPTION', 'COLOR', 'STATUS']
+        self.ID = 'ID'
+        self.SN = 'SN'
+        self.CATEGORY = 'CATEGORY'
+        self.TYPE = 'TYPE'
+        self.LOCATION = 'LOCATION'
+        self.DESCRIPTION = 'DESCRIPTION'
+        self.COLOR = 'COLOR'
+        self.STATUS = 'STATUS'
+
         self.header_printed = False  # Flag to track whether the header has been printed
 
     def get_last_asset_id(self):
@@ -55,7 +63,8 @@ class AssetManagementSystem:
         status = status.upper().strip()
 
         with open('assets.csv', 'a', newline='') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
+            writer = csv.DictWriter(csvfile, fieldnames=[self.ID, self.SN, self.CATEGORY, self.TYPE,
+                                                         self.LOCATION, self.DESCRIPTION, self.COLOR, self.STATUS])
 
             # Write header only if it hasn't been printed yet
             if not self.header_printed:
@@ -63,8 +72,9 @@ class AssetManagementSystem:
                 self.header_printed = True
 
             # Write the new asset
-            writer.writerow({'ID': ID, 'SN': sn, 'CATEGORY': asset_category, 'TYPE': asset_type,
-                             'LOCATION': location, 'DESCRIPTION': description, 'COLOR': color, 'STATUS': status})
+            writer.writerow({self.ID: ID, self.SN: sn, self.CATEGORY: asset_category, self.TYPE: asset_type,
+                             self.LOCATION: location, self.DESCRIPTION: description, self.COLOR: color,
+                             self.STATUS: status})
 
         print(f"Asset '{sn}' added successfully!\n")
 
@@ -75,7 +85,9 @@ class AssetManagementSystem:
                 print("\nList of Assets:")
                 for row in reader:
                     print(
-                        f"ID: {row['ID']}, SN: {row['SN']}, CATEGORY: {row['CATEGORY']}, TYPE: {row['TYPE']}, LOCATION: {row['LOCATION']}, DESCRIPTION: {row['DESCRIPTION']}, COLOR: {row['COLOR']}, STATUS: {row['STATUS']}")
+                        f"ID: {row[self.ID]}, SN: {row[self.SN]}, CATEGORY: {row[self.CATEGORY]}, TYPE: {row[self.TYPE]}, "
+                        f"LOCATION: {row[self.LOCATION]}, DESCRIPTION: {row[self.DESCRIPTION]}, COLOR: {row[self.COLOR]}, "
+                        f"STATUS: {row[self.STATUS]}")
                 print("\n")
         except FileNotFoundError:
             print("No assets found.\n")
@@ -94,14 +106,16 @@ class AssetManagementSystem:
                 reader = csv.DictReader(csvfile)
 
                 for row in reader:
-                    if row['SN'] == sn:
+                    if row[self.SN] == sn:
                         row[field_to_update] = new_value
                         updated = True
                     rows.append(row)
 
             if updated:
                 with open('assets.csv', 'w', newline='') as csvfile:
-                    writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
+                    writer = csv.DictWriter(csvfile, fieldnames=[self.ID, self.SN, self.CATEGORY, self.TYPE,
+                                                                 self.LOCATION, self.DESCRIPTION, self.COLOR,
+                                                                 self.STATUS])
                     writer.writeheader()
                     writer.writerows(rows)
                 print(f"Asset '{sn}' updated to {new_value} successfully!\n")
@@ -122,14 +136,16 @@ class AssetManagementSystem:
                 reader = csv.DictReader(csvfile)
 
                 for row in reader:
-                    if row['SN'] == sn:
+                    if row[self.SN] == sn:
                         deleted = True
                     else:
                         rows.append(row)
 
             if deleted:
                 with open('assets.csv', 'w', newline='') as csvfile:
-                    writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
+                    writer = csv.DictWriter(csvfile, fieldnames=[self.ID, self.SN, self.CATEGORY, self.TYPE,
+                                                                 self.LOCATION, self.DESCRIPTION, self.COLOR,
+                                                                 self.STATUS])
                     writer.writeheader()
                     writer.writerows(rows)
                 print(f"Asset '{sn}' deleted successfully!\n")
