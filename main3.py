@@ -1,7 +1,8 @@
 import csv
 import os
 import sys
-
+import logging
+from datetime import datetime
 
 class AssetManagementSystem:
 
@@ -18,6 +19,12 @@ class AssetManagementSystem:
         self.DESCRIPTION = 'DESCRIPTION'
         self.COLOR = 'COLOR'
         self.STATUS = 'STATUS'
+
+        # Configure logging
+        logging.basicConfig(filename='assets.log', level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
+
+    def log_activity(self, message):
+        logging.info(message)
 
     def get_last_asset_id(self):
         try:
@@ -40,25 +47,25 @@ class AssetManagementSystem:
         print("NOTE, all entries will be converted to upper case automatically\n")
 
         sn = input("Enter asset serial  number(SN): ")
-        sn = sn.strip().upper()
+        sn = sn.upper().strip()
 
         asset_category = input("Enter asset category: ")
-        asset_category = asset_category.strip().upper()
+        asset_category = asset_category.upper().strip()
 
         asset_type = input("Enter asset type: ")
-        asset_type = asset_type.strip().upper()
+        asset_type = asset_type.upper().strip()
 
         location = input("Enter asset location: ")
-        location = location.strip().upper()
+        location = location.upper().strip()
 
         description = input("Enter a short description about the asset: ")
-        description = description.strip().upper()
+        description = description.upper().strip()
 
         color = input("Enter the color of the asset: ")
-        color = color.strip().upper()
+        color = color.upper().strip()
 
         status = input("Enter asset status: ")
-        status = status.strip().upper()
+        status = status.upper().strip()
 
         with open('assets.csv', 'a', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=[self.ID, self.SN, self.CATEGORY, self.TYPE,
@@ -70,8 +77,11 @@ class AssetManagementSystem:
 
             # Write the new asset
             writer.writerow({self.ID: ID, self.SN: sn, self.CATEGORY: asset_category, self.TYPE: asset_type,
-                             self.LOCATION: location, self.DESCRIPTION: description, self.COLOR: color,
-                             self.STATUS: status})
+                             self.LOCATION: location, self.DESCRIPTION: description, self.COLOR: color, self.STATUS: status})
+
+            # Log the activity
+            log_message = f"Asset '{sn}' (ID: {ID}) added successfully!"
+            self.log_activity(log_message)
 
         print(f"Asset '{sn}' added successfully!\n")
 
@@ -146,6 +156,10 @@ class AssetManagementSystem:
                     writer.writeheader()
                     writer.writerows(rows)
                 print(f"Asset '{sn}' deleted successfully!\n")
+
+                # Log the activity
+                log_message = f"Asset '{sn}' (ID: {self.ID}) was deleted successfully!"
+                self.log_activity(log_message)
             else:
                 print(f"Asset '{sn}' not found.\n")
 
@@ -178,11 +192,11 @@ def main():
         elif choice == '5':
 
             confirm = input("Are you sure you want to exit this application?[Y/N] ")
-            if confirm.strip().upper() == "Y":
+            if confirm.upper() == "Y":
                 print("Exiting the Asset Management System. Goodbye!\n")
                 print("AMS, powered by GridCode.")
                 sys.exit()
-            elif confirm.strip().upper() == "N":
+            elif confirm.upper() == "N":
                 main()
             else:
                 print(f"Invalid response, {confirm}\n")
@@ -193,4 +207,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
