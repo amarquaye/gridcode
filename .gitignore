@@ -1,5 +1,5 @@
 assets*
-*pdf
-*csv
+*.pdf
+*.csv
 .idea/*
 .vscode/*
