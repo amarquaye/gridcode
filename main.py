@@ -16,6 +16,7 @@ class AssetManagementSystem:
         self.CATEGORY = 'CATEGORY'
         self.TYPE = 'TYPE'
         self.LOCATION = 'LOCATION'
+        self.ASSIGNEE = 'ASSIGNEE'
         self.DESCRIPTION = 'DESCRIPTION'
         self.COLOR = 'COLOR'
         self.STATUS = 'STATUS'
@@ -60,6 +61,9 @@ class AssetManagementSystem:
         location = input("Enter asset location: ")
         location = location.strip().upper()
 
+        assignee = input("Enter the name of the person you want to assign this asset: ")
+        assignee = assignee.strip().upper()
+
         description = input("Enter a short description about the asset: ")
         description = description.strip().upper()
 
@@ -71,7 +75,7 @@ class AssetManagementSystem:
 
         with open('assets.csv', 'a', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=[self.ID, self.SN, self.CATEGORY, self.TYPE,
-                                                         self.LOCATION, self.DESCRIPTION, self.COLOR, self.STATUS])
+                                                         self.LOCATION, self.ASSIGNEE ,self.DESCRIPTION, self.COLOR, self.STATUS])
 
             # Check if the file is empty, and write the header only if it is
             if os.stat('assets.csv').st_size == 0:
@@ -79,7 +83,7 @@ class AssetManagementSystem:
 
             # Write the new asset
             writer.writerow({self.ID: ID, self.SN: sn, self.CATEGORY: asset_category, self.TYPE: asset_type,
-                             self.LOCATION: location, self.DESCRIPTION: description, self.COLOR: color, self.STATUS: status})
+                             self.LOCATION: location, self.ASSIGNEE: assignee, self.DESCRIPTION: description, self.COLOR: color, self.STATUS: status})
 
             # Log the activity
             log_message = f"Asset '{sn}' (ID: {ID}) added successfully."
@@ -88,30 +92,46 @@ class AssetManagementSystem:
         print(f"Asset '{sn}' added successfully!\n")
 
     def read_assets(self):
-        try:
-            with open('assets.csv', newline='') as csvfile:
-                reader = csv.DictReader(csvfile)
-                print("\nList of Assets:")
-                for row in reader:
-                    print(
-                        f"ID: {row[self.ID]}, SN: {row[self.SN]}, CATEGORY: {row[self.CATEGORY]}, TYPE: {row[self.TYPE]}, "
-                        f"LOCATION: {row[self.LOCATION]}, DESCRIPTION: {row[self.DESCRIPTION]}, COLOR: {row[self.COLOR]}, "
-                        f"STATUS: {row[self.STATUS]}")
+        # List options
+        print("\n1) Excel sheet")
+        print("2) PDF")
+        print("3) Default view")
 
-                # Log the activity
-                log_message = "Read assets from the system."
-                self.log_activity(log_message)
+        read_choice = input("Enter the choice of reading: ")
+        read_choice = read_choice.strip().upper()
 
-                print("\n")
-        except FileNotFoundError:
-            print("No assets found.\n")
+        if read_choice == "3":
+            try:
+                with open('assets.csv', newline='') as csvfile:
+                    reader = csv.DictReader(csvfile)
+                    print("\nList of Assets:")
+                    for row in reader:
+                        print(
+                            f"ID: {row[self.ID]}, SN: {row[self.SN]}, CATEGORY: {row[self.CATEGORY]}, TYPE: {row[self.TYPE]}, "
+                            f"LOCATION: {row[self.LOCATION]}, ASSIGNEE: {row[self.ASSIGNEE]}, DESCRIPTION: {row[self.DESCRIPTION]}, COLOR: {row[self.COLOR]}, "
+                            f"STATUS: {row[self.STATUS]}")
+
+                    # Log the activity
+                    log_message = "Read assets from the system."
+                    self.log_activity(log_message)
+
+                    print("\n")
+            except FileNotFoundError:
+                print("No assets found.\n")
+
+        elif read_choice == "1":
+            os.startfile("assets.csv")
+            sys.exit()
+
+        else:
+            print("Invalid choice")
 
     def update_asset(self):
         sn = input("Enter the serial number of the asset you want to update: ")
         sn = sn.strip().upper()
 
         field_to_update = input(
-            "Enter the field to update (SN / CATEGORY / TYPE / LOCATION / DESCRIPTION /COLOR / STATUS): ")
+            "Enter the field to update (SN / CATEGORY / TYPE / LOCATION / ASSIGNEE / DESCRIPTION /COLOR / STATUS): ")
         field_to_update = field_to_update.strip().upper()
 
         new_value = input(f"Enter the new value for {field_to_update}: ")
@@ -137,7 +157,7 @@ class AssetManagementSystem:
             if updated:
                 with open('assets.csv', 'w', newline='') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=[self.ID, self.SN, self.CATEGORY, self.TYPE,
-                                                                 self.LOCATION, self.DESCRIPTION, self.COLOR, self.STATUS])
+                                                                 self.LOCATION, self.ASSIGNEE ,self.DESCRIPTION, self.COLOR, self.STATUS])
                     writer.writeheader()
                     writer.writerows(rows)
 
@@ -173,7 +193,7 @@ class AssetManagementSystem:
             if deleted:
                 with open('assets.csv', 'w', newline='') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=[self.ID, self.SN, self.CATEGORY, self.TYPE,
-                                                                 self.LOCATION, self.DESCRIPTION, self.COLOR, self.STATUS])
+                                                                 self.LOCATION, self.ASSIGNEE ,self.DESCRIPTION, self.COLOR, self.STATUS])
                     writer.writeheader()
                     writer.writerows(rows)
 
