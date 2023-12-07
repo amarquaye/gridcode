@@ -1,0 +1,6 @@
+assets*
+old*
+*.pdf
+*.csv
+.idea/*
+.vscode/*
