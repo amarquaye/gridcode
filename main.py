@@ -20,8 +20,10 @@ class AssetManagementSystem:
         self.COLOR = 'COLOR'
         self.STATUS = 'STATUS'
 
-        # Configure logging
-        logging.basicConfig(filename='assets.log', level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
+        # Configure logging with custom format
+        logging.basicConfig(filename='assets.log', level=logging.INFO,
+                            format='%(asctime)s - %(levelname)s: %(message)s',
+                            datefmt='%A, %Y-%m-%d %I:%M:%S %p') 
 
     def log_activity(self, message):
         logging.info(message)
@@ -47,25 +49,25 @@ class AssetManagementSystem:
         print("NOTE, all entries will be converted to upper case automatically\n")
 
         sn = input("Enter asset serial  number(SN): ")
-        sn = sn.upper().strip()
+        sn = sn.strip().upper()
 
         asset_category = input("Enter asset category: ")
-        asset_category = asset_category.upper().strip()
+        asset_category = asset_category.strip().upper()
 
         asset_type = input("Enter asset type: ")
-        asset_type = asset_type.upper().strip()
+        asset_type = asset_type.strip().upper()
 
         location = input("Enter asset location: ")
-        location = location.upper().strip()
+        location = location.strip().upper()
 
         description = input("Enter a short description about the asset: ")
-        description = description.upper().strip()
+        description = description.strip().upper()
 
         color = input("Enter the color of the asset: ")
-        color = color.upper().strip()
+        color = color.strip().upper()
 
         status = input("Enter asset status: ")
-        status = status.upper().strip()
+        status = status.strip().upper()
 
         with open('assets.csv', 'a', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=[self.ID, self.SN, self.CATEGORY, self.TYPE,
@@ -106,9 +108,14 @@ class AssetManagementSystem:
 
     def update_asset(self):
         sn = input("Enter the serial number of the asset you want to update: ")
+        sn = sn.strip().upper()
+
         field_to_update = input(
             "Enter the field to update (SN / CATEGORY / TYPE / LOCATION / DESCRIPTION /COLOR / STATUS): ")
+        field_to_update = field_to_update.strip().upper()
+
         new_value = input(f"Enter the new value for {field_to_update}: ")
+        new_value = new_value.strip().upper()
 
         rows = []
         updated = False
@@ -144,6 +151,7 @@ class AssetManagementSystem:
 
     def delete_asset(self):
         sn = input("Enter the serial number of the asset you want to delete: ")
+        sn = sn.strip().upper()
 
         rows = []
         deleted = False
@@ -188,6 +196,7 @@ def main():
         print("5. Exit")
 
         choice = input("Enter your choice (1-5): ")
+        choice = choice.strip()
 
         if choice == '1':
             asset_system.create_asset()
@@ -199,12 +208,12 @@ def main():
             asset_system.delete_asset()
         elif choice == '5':
 
-            confirm = input("Are you sure you want to exit this application?[Y/N] ")
-            if confirm.upper() == "Y":
+            confirm = input("Are you sure you want to exit this application? [Y/N]: ")
+            if confirm.strip().upper() == "Y":
                 print("Exiting the Asset Management System. Goodbye!\n")
                 print("AMS, powered by GridCode.")
                 sys.exit()
-            elif confirm.upper() == "N":
+            elif confirm.strip().upper() == "N":
                 main()
             else:
                 print(f"Invalid response, {confirm}\n")
