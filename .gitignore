@@ -1,4 +1,5 @@
 assets*
+old*
 *.pdf
 *.csv
 .idea/*

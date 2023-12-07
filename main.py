@@ -1,6 +1,7 @@
 import csv
 import os
 import sys
+import logging
 
 
 class AssetManagementSystem:
@@ -18,6 +19,12 @@ class AssetManagementSystem:
         self.DESCRIPTION = 'DESCRIPTION'
         self.COLOR = 'COLOR'
         self.STATUS = 'STATUS'
+
+        # Configure logging
+        logging.basicConfig(filename='assets.log', level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
+
+    def log_activity(self, message):
+        logging.info(message)
 
     def get_last_asset_id(self):
         try:
@@ -40,25 +47,25 @@ class AssetManagementSystem:
         print("NOTE, all entries will be converted to upper case automatically\n")
 
         sn = input("Enter asset serial  number(SN): ")
-        sn = sn.strip().upper()
+        sn = sn.upper().strip()
 
         asset_category = input("Enter asset category: ")
-        asset_category = asset_category.strip().upper()
+        asset_category = asset_category.upper().strip()
 
         asset_type = input("Enter asset type: ")
-        asset_type = asset_type.strip().upper()
+        asset_type = asset_type.upper().strip()
 
         location = input("Enter asset location: ")
-        location = location.strip().upper()
+        location = location.upper().strip()
 
         description = input("Enter a short description about the asset: ")
-        description = description.strip().upper()
+        description = description.upper().strip()
 
         color = input("Enter the color of the asset: ")
-        color = color.strip().upper()
+        color = color.upper().strip()
 
         status = input("Enter asset status: ")
-        status = status.strip().upper()
+        status = status.upper().strip()
 
         with open('assets.csv', 'a', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=[self.ID, self.SN, self.CATEGORY, self.TYPE,
@@ -70,8 +77,11 @@ class AssetManagementSystem:
 
             # Write the new asset
             writer.writerow({self.ID: ID, self.SN: sn, self.CATEGORY: asset_category, self.TYPE: asset_type,
-                             self.LOCATION: location, self.DESCRIPTION: description, self.COLOR: color,
-                             self.STATUS: status})
+                             self.LOCATION: location, self.DESCRIPTION: description, self.COLOR: color, self.STATUS: status})
+
+            # Log the activity
+            log_message = f"Asset '{sn}' (ID: {ID}) added successfully."
+            self.log_activity(log_message)
 
         print(f"Asset '{sn}' added successfully!\n")
 
@@ -85,6 +95,11 @@ class AssetManagementSystem:
                         f"ID: {row[self.ID]}, SN: {row[self.SN]}, CATEGORY: {row[self.CATEGORY]}, TYPE: {row[self.TYPE]}, "
                         f"LOCATION: {row[self.LOCATION]}, DESCRIPTION: {row[self.DESCRIPTION]}, COLOR: {row[self.COLOR]}, "
                         f"STATUS: {row[self.STATUS]}")
+
+                # Log the activity
+                log_message = "Read assets from the system."
+                self.log_activity(log_message)
+
                 print("\n")
         except FileNotFoundError:
             print("No assets found.\n")
@@ -104,6 +119,10 @@ class AssetManagementSystem:
 
                 for row in reader:
                     if row[self.SN] == sn:
+                        # Log the old values before updating
+                        log_message_old = f"Asset '{sn}' (ID: {row[self.ID]}) - {field_to_update}: {row[field_to_update]} - updated to {new_value}."
+                        self.log_activity(log_message_old)
+
                         row[field_to_update] = new_value
                         updated = True
                     rows.append(row)
@@ -111,11 +130,12 @@ class AssetManagementSystem:
             if updated:
                 with open('assets.csv', 'w', newline='') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=[self.ID, self.SN, self.CATEGORY, self.TYPE,
-                                                                 self.LOCATION, self.DESCRIPTION, self.COLOR,
-                                                                 self.STATUS])
+                                                                 self.LOCATION, self.DESCRIPTION, self.COLOR, self.STATUS])
                     writer.writeheader()
                     writer.writerows(rows)
-                print(f"Asset '{sn}' updated to '{new_value}' successfully!\n")
+
+
+                print(f"Asset '{sn}' updated to {new_value} successfully!\n")
             else:
                 print(f"Asset '{sn}' not found.\n")
 
@@ -134,6 +154,10 @@ class AssetManagementSystem:
 
                 for row in reader:
                     if row[self.SN] == sn:
+                        # Log the asset information before deleting
+                        log_message = f"Asset '{sn}' (ID: {row[self.ID]}) deleted successfully."
+                        self.log_activity(log_message)
+
                         deleted = True
                     else:
                         rows.append(row)
@@ -141,18 +165,16 @@ class AssetManagementSystem:
             if deleted:
                 with open('assets.csv', 'w', newline='') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=[self.ID, self.SN, self.CATEGORY, self.TYPE,
-                                                                 self.LOCATION, self.DESCRIPTION, self.COLOR,
-                                                                 self.STATUS])
+                                                                 self.LOCATION, self.DESCRIPTION, self.COLOR, self.STATUS])
                     writer.writeheader()
                     writer.writerows(rows)
+
                 print(f"Asset '{sn}' deleted successfully!\n")
             else:
                 print(f"Asset '{sn}' not found.\n")
 
         except FileNotFoundError:
             print("No assets found.\n")
-
-
 # Main function
 def main():
     asset_system = AssetManagementSystem()
@@ -178,11 +200,11 @@ def main():
         elif choice == '5':
 
             confirm = input("Are you sure you want to exit this application?[Y/N] ")
-            if confirm.strip().upper() == "Y":
+            if confirm.upper() == "Y":
                 print("Exiting the Asset Management System. Goodbye!\n")
                 print("AMS, powered by GridCode.")
                 sys.exit()
-            elif confirm.strip().upper() == "N":
+            elif confirm.upper() == "N":
                 main()
             else:
                 print(f"Invalid response, {confirm}\n")
@@ -193,4 +215,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
