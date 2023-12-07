@@ -134,9 +134,6 @@ class AssetManagementSystem:
                     writer.writeheader()
                     writer.writerows(rows)
 
-                # Log the activity
-                log_message = f"Asset '{sn}' (ID: {row[self.ID]}) - {field_to_update}: updated to {new_value} successfully."
-                self.log_activity(log_message)
 
                 print(f"Asset '{sn}' updated to {new_value} successfully!\n")
             else:
