@@ -2,7 +2,9 @@ import csv
 import os
 import sys
 import logging
+from datetime import datetime 
 from csv2pdf import convert
+import pywriter as pw
 
 
 class AssetManagementSystem:
@@ -249,6 +251,52 @@ class AssetManagementSystem:
         except FileNotFoundError:
             print("No assets found.\n")
 
+def log_in():
+    username_input = input("Enter your username: ")
+    password_input = input("Enter your password: ")
+
+    if user_manager.login(username_input, password_input):
+        print("Login successful!")
+        main()
+    else:
+        print("Login failed.")
+
+class UserManager:
+    def __init__(self):
+        self.log_file = 'activity_log.txt'
+
+    def log_activity(self, message):
+        timestamp = datetime.now().strftime("%A, %Y-%m-%d %I:%M:%S %p")
+        with open(self.log_file, 'a') as log_file:
+            log_file.write(f"{timestamp} {message}\n")
+
+    def login(self, username, password):
+        if os.path.exists('user_data.csv'):
+            with open('user_data.csv', 'r', newline='') as csvfile:
+                csvreader = csv.DictReader(csvfile)
+                for row in csvreader:
+                    if row['username'] == username and row['password'] == password:
+                        log_message = f"'{username}' has logged in."
+                        self.log_activity(log_message)
+                        return True
+        return False
+
+    def create_account(self, username, password):
+        fieldnames = ['username', 'password']
+
+        if not os.path.exists('user_data.csv'):
+            with open('user_data.csv', 'w', newline='') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_MINIMAL)
+                writer.writeheader()
+
+        with open('user_data.csv', 'a', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_MINIMAL)
+            writer.writerow({'username': username, 'password': password})
+            log_message = f"Account created for user '{username}'."
+            self.log_activity(log_message)
+            return True
+
+
 # Main function
 def main():
     asset_system = AssetManagementSystem()
@@ -292,4 +340,43 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    
+    pw.write(rate=0.001, text=r""""
+  ,----..           ,-.----.              ,---,            ,---,              ,----..             /   /   \              ,---,                ,---,. 
+ /   /   \          \    /  \          ,`--.' |          .'  .' `\           /   /   \           /   .     :           .'  .' `\            ,'  .' | 
+|   :     :         ;   :    \         |   :  :        ,---.'     \         |   :     :         .   /   ;.  \        ,---.'     \         ,---.'   | 
+.   |  ;. /         |   | .\ :         :   |  '        |   |  .`\  |        .   |  ;. /        .   ;   /  ` ;        |   |  .`\  |        |   |   .' 
+.   ; /--`          .   : |: |         |   :  |        :   : |  '  |        .   ; /--`         ;   |  ; \ ; |        :   : |  '  |        :   :  |-, 
+;   | ;  __         |   |  \ :         '   '  ;        |   ' '  ;  :        ;   | ;            |   :  | ; | '        |   ' '  ;  :        :   |  ;/| 
+|   : |.' .'        |   : .  /         |   |  |        '   | ;  .  |        |   : |            .   |  ' ' ' :        '   | ;  .  |        |   :   .' 
+.   | '_.' :        ;   | |  \         '   :  ;        |   | :  |  '        .   | '___         '   ;  \; /  |        |   | :  |  '        |   |  |-, 
+'   ; : \  |        |   | ;\  \        |   |  '        '   : | /  ;         '   ; : .'|         \   \  ',  /         '   : | /  ;         '   :  ;/| 
+'   | '/  .'        :   ' | \.'        '   :  |        |   | '` ,/          '   | '/  :          ;   :    /          |   | '` ,/          |   |    \ 
+|   :    /          :   : :-'          ;   |.'         ;   :  .'            |   :    /            \   \ .'           ;   :  .'            |   :   .' 
+ \   \ .'           |   |.'            '---'           |   ,.'               \   \ .'              `---`             |   ,.'              |   | ,'   
+  `---`             `---'                              '---'                  `---`                                  '---'                `----'     
+""")
+
+    user_manager = UserManager()
+
+    # Login
+    username_input = input("Enter your username: ")
+    password_input = input("Enter your password: ")
+
+    if user_manager.login(username_input, password_input):
+        print("Login successful!")
+        main()
+    else:
+        print("Login failed.")
+        ans = input("Would you like to create an account?[Y/N]")
+        if ans.strip().upper() == "Y":
+            new_username = input("Enter a new username: ")
+            new_password = input("Enter a new password: ")
+            if user_manager.create_account(new_username, new_password):
+                print("Account created!") 
+                log_in()
+            else:
+                print("Failed to create an account.")
+        else:
+            print("Alright! Thank you for coming.")
+            sys.exit()
