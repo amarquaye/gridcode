@@ -39,7 +39,7 @@ python main.py
 
 #### Asset Management System Class (AssetManagementSystem):
 
-##### Initialization:
+#### Initialization:
 
 ```py
 def __init__(self):
@@ -61,7 +61,7 @@ Checks if the 'assets.csv' file exists.
 Defines column headers for the CSV file.
 Configures logging to log activities to 'assets.log'.
 
-##### log_activity Method:
+#### log_activity Method:
 
 ```py
 def log_activity(self, message):
@@ -73,7 +73,7 @@ def log_activity(self, message):
 
 Logs an activity message using the logging module.
 
-##### get_last_asset_id Method:
+#### get_last_asset_id Method:
 
 ```py
 def get_last_asset_id(self):
@@ -95,7 +95,7 @@ def get_last_asset_id(self):
 Reads the 'assets.csv' file to get the last asset ID.
 Returns 0 if the file doesn't exist.
 
-##### create_asset Method:
+#### create_asset Method:
 
 ```py
 def create_asset(self):
@@ -117,7 +117,7 @@ Appends the new asset to 'assets.csv'.
 Logs the activity.
 Handles PermissionError if the file is open in another application.
 
-##### is_serial_number_unique Method:
+#### is_serial_number_unique Method:
 
 ```py
 def is_serial_number_unique(self, serial_number):
@@ -134,7 +134,7 @@ def is_serial_number_unique(self, serial_number):
 
 Checks if a given serial number is unique in the 'assets.csv' file.
 
-##### read_assets Method:
+#### read_assets Method:
 
 ```py
 def read_assets(self):
@@ -154,7 +154,7 @@ def read_assets(self):
 Allows the user to choose how to view assets (spreadsheet, PDF, or default terminal view).
 Logs the activity.
 
-##### search_assets Method:
+#### search_assets Method:
 
 ```py
 def search_assets(self):
@@ -178,7 +178,7 @@ Displays found assets in a tabulated format.
 Logs the activity.
 Handles FileNotFoundError and KeyError.
 
-##### update_asset Method:
+#### update_asset Method:
 
 ```py
 def update_asset(self):
@@ -199,7 +199,7 @@ Logs the old and new values.
 Writes the updated assets to 'assets.csv'.
 Handles FileNotFoundError.
 
-##### delete_asset Method:
+#### delete_asset Method:
 
 ```py
 def delete_asset(self):
@@ -220,9 +220,9 @@ Logs the deletion activity.
 Writes the remaining assets to 'assets.csv'.
 Handles FileNotFoundError.
 
-##### User Manager Class (UserManager):
+#### User Manager Class (UserManager):
 
-##### __init__ Method:
+#### __init__ Method:
 
 ```py
 def __init__(self):
@@ -235,7 +235,7 @@ def __init__(self):
 Initializes the UserManager with a log file.
 
 
-##### log_activity Method:
+#### log_activity Method:
 
 ```py
 def log_activity(self, message):
@@ -249,7 +249,7 @@ def log_activity(self, message):
 
 Logs user activities with a timestamp.
 
-##### login Method:
+#### login Method:
 
 ```py
 def login(self, username, password):
@@ -263,7 +263,7 @@ def login(self, username, password):
 Authenticates a user by checking the username and password against stored data.
 Logs successful logins.
 
-##### create_account Method:
+#### create_account Method:
 
 ```py
 def create_account(self, username, password):
@@ -278,7 +278,7 @@ Creates a new user account.
 Hashes the password before storing it.
 Logs the account creation
 
-##### hash_password Method:
+#### hash_password Method:
 
 ```py
 def hash_password(self, password):
@@ -290,7 +290,7 @@ def hash_password(self, password):
 
 Hashes a given password using SHA-256.
 
-##### verify_password Method:
+#### verify_password Method:
 
 ```py
 def verify_password(self, stored_password, entered_password):
@@ -302,7 +302,7 @@ def verify_password(self, stored_password, entered_password):
 
 Verifies a password against a stored hashed password during login.
 
-##### Display and Menu Functions:
+#### Display and Menu Functions:
 
 ```py
 def print_yellow(text, rate=0.001):
@@ -314,7 +314,7 @@ def print_yellow(text, rate=0.001):
 
 Prints text in yellow with a specified printing rate.
 
-##### display_menu Function:
+#### display_menu Function:
 
 ```py
 def display_menu():
@@ -326,7 +326,7 @@ def display_menu():
 
 Displays the main menu for login.
 
-##### login Function:
+#### login Function:
 
 ```py
 def login(user_manager):
@@ -340,7 +340,7 @@ def login(user_manager):
 Takes user input for username and password.
 Calls user_manager.login for authentication.
 
-##### create_user Function:
+#### create_user Function:
 
 ```py
 def create_user(user_manager):
@@ -353,7 +353,7 @@ def create_user(user_manager):
 Takes user input for a new username and password.
 Calls user_manager.create_account to create a new user.
 
-##### Main Execution (__name__ == "__main__"):
+#### Main Execution (__name__ == "__main__"):
 
 ```py
 if __name__ == "__main__":
