@@ -1,6 +1,10 @@
-assets*
+asset*
 old*
 *.pdf
 *.csv
 .idea/*
 .vscode/*
+build/*
+*.log
+ams.ico
+*.spec
