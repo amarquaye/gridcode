@@ -23,175 +23,355 @@ The Asset Management System is implemented in Python and utilizes CSV files for 
 To use the Asset Management System, follow these steps:
 
 ### **Clone the Repository:**
+
 ```bash
 git clone https://github.com/amarquaye/gridcode.git
 cd gridcode
 ```
 
 ### **Run the program:**
+
 ```python
 python main.py
 ```
 
 ### **Code Structure:**
-```python
-The code is organized into a class-based structure with the following components:
 
-***Class: AssetManagementSystem*** 
-__init__(self): Initializes the system by checking if the 'assets.csv' file exists and defining fieldnames.
+#### Asset Management System Class (AssetManagementSystem):
 
-get_last_asset_id(self): Helper function to retrieve the ID of the last asset in the CSV file.
+##### Initialization:
 
-create_asset(self): Allows users to create a new asset, generating a unique ID and writing the asset details to the CSV file.
+```py
+def __init__(self):
+    self.file_exists = os.path.isfile('assets.csv')
+    self.ID = 'ID'
+    self.SN = 'SN'
+    # ... (other column headers)
+    self.STATUS = 'STATUS'
+    logging.basicConfig(filename='assets.log', level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s: %(message)s',
+                        datefmt='%A, %Y-%m-%d %I:%M:%S %p')
 
-read_assets(self): Displays a list of all assets stored in the CSV file.
+```
 
-update_asset(self): Allows users to update the details of a specific asset.
+##### **Explanation**:
 
-delete_asset(self): Allows users to delete a specific asset.
+Initializes the AssetManagementSystem.
+Checks if the 'assets.csv' file exists.
+Defines column headers for the CSV file.
+Configures logging to log activities to 'assets.log'.
+
+##### log_activity Method:
+
+```py
+def log_activity(self, message):
+    logging.info(message)
 
 ```
 
-
-### **Code Breakdown**
-#### **1. Initialization**
-```python
-import csv
-import os
-import sys
-
-class AssetManagementSystem:
-    def __init__(self):
-        # Check if the file exists
-        self.file_exists = os.path.isfile('assets.csv')
-
-        # Open the CSV file in append mode
-        self.fieldnames = ['ID', 'SN', 'CATEGORY', 'TYPE', 'LOCATION', 'DESCRIPTION', 'COLOR', 'STATUS']
-        self.header_printed = False  # Flag to track whether the header has been printed
-
-```
 ##### **Explanation:**
-This section is part of a class called AssetManagementSystem.
-os.path.isfile('assets.csv') checks whether a file named 'assets.csv' exists. This is crucial because the program needs to interact with this file for managing assets.
-self.fieldnames defines the column headers for the CSV file, representing various attributes of each asset.
-self.header_printed is a flag used to track whether the header has been printed when writing to the CSV file.
 
-#### **2. Get Last Asset ID**
-```python
+Logs an activity message using the logging module.
+
+##### get_last_asset_id Method:
+
+```py
 def get_last_asset_id(self):
-        try:
-            with open('assets.csv', 'r', newline='') as csvfile:
-                reader = csv.DictReader(csvfile)
-                rows = list(reader)
-                if rows:
-                    return int(rows[-1]['ID'])
-                else:
-                    return 0
-        except FileNotFoundError:
-            return 0
-```
-##### **Explanation:**
-This method aims to retrieve the last used asset ID from the CSV file.
-It uses a try block to handle potential file-not-found errors (FileNotFoundError).
-It opens the 'assets.csv' file in read mode and uses csv.DictReader to read the CSV data into a list of dictionaries (rows).
-If there are rows (assets) in the file, it returns the ID of the last asset; otherwise, it returns 0.
-If the file is not found, it also returns 0.
+    try:
+        with open('assets.csv', 'r', newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            rows = list(reader)
+            if rows:
+                return int(rows[-1]['ID'])
+            else:
+                return 0
+    except FileNotFoundError:
+        return 0
 
-#### **3. Create Asset**
-```python
+```
+
+##### **Explanation:**
+
+Reads the 'assets.csv' file to get the last asset ID.
+Returns 0 if the file doesn't exist.
+
+##### create_asset Method:
+
+```py
 def create_asset(self):
-        # ... (input prompts)
+    # ... (prompting user for asset details)
+    try:
         with open('assets.csv', 'a', newline='') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
-
-            # Write header only if it hasn't been printed yet
-            if not self.header_printed:
-                writer.writeheader()
-                self.header_printed = True
-
-            # Write the new asset
-            writer.writerow({'ID': ID, 'SN': sn, 'CATEGORY': asset_category, 'TYPE': asset_type,
-                             'LOCATION': location, 'DESCRIPTION': description, 'COLOR': color, 'STATUS': status})
+            # ... (writing the new asset to the CSV file)
         print(f"Asset '{sn}' added successfully!\n")
-```
-##### **Explanation:**
-This method allows the user to input details for a new asset.
-It uses a with statement to open the 'assets.csv' file in append mode.
-csv.DictWriter is employed to write data to the CSV file using dictionaries.
-It checks whether the header has been printed. If not, it prints the header.
-It then writes a new row (asset) to the CSV file with details provided by the user.
-Finally, it prints a success message.
+    except PermissionError:
+        print("Cannot access file\nPlease close your spreadsheet reader and try again!")
 
-#### **4. Read Assets**
-```python
+```
+
+##### **Explanation:**
+
+Prompts the user for asset details.
+Checks for serial number uniqueness.
+Appends the new asset to 'assets.csv'.
+Logs the activity.
+Handles PermissionError if the file is open in another application.
+
+##### is_serial_number_unique Method:
+
+```py
+def is_serial_number_unique(self, serial_number):
+    with open('assets.csv', 'r', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if row[self.SN] == serial_number:
+                return False
+    return True
+
+```
+
+##### **Explanation:**
+
+Checks if a given serial number is unique in the 'assets.csv' file.
+
+##### read_assets Method:
+
+```py
 def read_assets(self):
-        try:
-            with open('assets.csv', newline='') as csvfile:
-                reader = csv.DictReader(csvfile)
-                # ... (printing asset details)
-        except FileNotFoundError:
-            print("No assets found.\n")
-```
-##### **Explanation:**
-This method reads and displays existing assets from 'assets.csv'.
-It uses a try block to handle potential file-not-found errors (FileNotFoundError).
-It opens the 'assets.csv' file in read mode using csv.DictReader.
-It then iterates through each row and prints details of each asset.
+    # ... (prompting user for reading choice)
+    if read_choice == "1":
+        os.startfile("assets.csv")
+        sys.exit()
+    elif read_choice == "2":
+        # ... (converting CSV to PDF and opening)
+    elif read_choice == "3":
+        # ... (reading and displaying assets in terminal)
 
-#### **5. Update Asset**
-```python
-def update_asset(self):
-        # ... (input prompts)
-        rows = []
-        updated = False
-        try:
-            with open('assets.csv', 'r', newline='') as csvfile:
-                reader = csv.DictReader(csvfile)
-                # ... (updating specified asset field)
-        except FileNotFoundError:
-            print("No assets found.\n")
 ``` 
-##### **Explanation:**
-This method updates the specified field of a chosen asset.
-It uses a try block to handle potential file-not-found errors (FileNotFoundError).
-It reads the 'assets.csv' file, iterates through each row, and updates the specified field of the chosen asset.
-If the asset is found and updated, it writes the changes back to the file.
-If the asset is not found, it prints a message indicating so.
 
-#### **6. Delete Asset**
-```python
+##### **Explanation:**
+
+Allows the user to choose how to view assets (spreadsheet, PDF, or default terminal view).
+Logs the activity.
+
+##### search_assets Method:
+
+```py
+def search_assets(self):
+    # ... (prompting user for search criteria)
+    try:
+        with open('assets.csv', 'r', newline='') as csvfile:
+            # ... (searching and displaying found assets)
+    except FileNotFoundError:
+        print("No assets found.\n")
+    except KeyError:
+        print("Entry can't be found or you mispelt an entry!")
+        main()
+
+```
+
+##### **Explanation:**
+
+Prompts the user for search criteria.
+Searches assets based on the specified column and value.
+Displays found assets in a tabulated format.
+Logs the activity.
+Handles FileNotFoundError and KeyError.
+
+##### update_asset Method:
+
+```py
+def update_asset(self):
+    # ... (prompting user for asset and update details)
+    try:
+        with open('assets.csv', 'r', newline='') as csvfile:
+            # ... (updating the asset and logging the activity)
+    except FileNotFoundError:
+        print("No assets found.\n")
+
+```
+
+##### **Explanation:**
+
+Prompts the user for the serial number and the field to update.
+Updates the specified field of an asset.
+Logs the old and new values.
+Writes the updated assets to 'assets.csv'.
+Handles FileNotFoundError.
+
+##### delete_asset Method:
+
+```py
 def delete_asset(self):
-        # ... (input prompt)
-        rows = []
-        deleted = False
-        try:
-            with open('assets.csv', 'r', newline='') as csvfile:
-                reader = csv.DictReader(csvfile)
-                # ... (deleting specified asset)
-        except FileNotFoundError:
-            print("No assets found.\n")
-```
-##### **Explanation:**
-This method deletes a specified asset based on its serial number.
-It uses a try block to handle potential file-not-found errors (FileNotFoundError).
-It reads the 'assets.csv' file, identifies the asset to delete, and writes the changes back to the file.
-If the asset is not found, it prints a message indicating so.
+    # ... (prompting user for asset details)
+    try:
+        with open('assets.csv', 'r', newline='') as csvfile:
+            # ... (deleting the asset and logging the activity)
+    except FileNotFoundError:
+        print("No assets found.\n")
 
-#### **7. Main Function**
-```python
-def main():
-    asset_system = AssetManagementSystem()
-    # ... (menu and user interaction)
-if __name__ == "__main__":
-    main()
 ```
-##### **Explanation:**
-The main function is the entry point of the program.
-It creates an instance of the AssetManagementSystem class.
-It then runs a loop for user interaction, presenting a menu for creating, reading, updating, or deleting assets.
-It allows the user to exit the system by entering '5'.
+
+##### Explanation:
+
+Prompts the user for the serial number of the asset to delete.
+Deletes the specified asset.
+Logs the deletion activity.
+Writes the remaining assets to 'assets.csv'.
+Handles FileNotFoundError.
+
+##### User Manager Class (UserManager):
+
+##### __init__ Method:
+
+```py
+def __init__(self):
+    self.log_file = 'activity.log'
+
+```
+
+##### Explanation:
+
+Initializes the UserManager with a log file.
+
+
+##### log_activity Method:
+
+```py
+def log_activity(self, message):
+    timestamp = datetime.now().strftime("%A, %Y-%m-%d %I:%M:%S %p")
+    with open(self.log_file, 'a') as log_file:
+        log_file.write(f"{timestamp} {message}\n")
+
+```
+
+##### Explanation:
+
+Logs user activities with a timestamp.
+
+##### login Method:
+
+```py
+def login(self, username, password):
+    # ... (checks username and verifies password)
+    return True/False
+
+```
+
+##### Explanation:
+
+Authenticates a user by checking the username and password against stored data.
+Logs successful logins.
+
+##### create_account Method:
+
+```py
+def create_account(self, username, password):
+    # ... (creates a new user account and logs the activity)
+    return True/False
+
+```
+
+##### Explanation:
+
+Creates a new user account.
+Hashes the password before storing it.
+Logs the account creation
+
+##### hash_password Method:
+
+```py
+def hash_password(self, password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+```
+
+##### Explanation:
+
+Hashes a given password using SHA-256.
+
+##### verify_password Method:
+
+```py
+def verify_password(self, stored_password, entered_password):
+    return stored_password == self.hash_password(entered_password)
+
+```
+
+##### Explanation:
+
+Verifies a password against a stored hashed password during login.
+
+##### Display and Menu Functions:
+
+```py
+def print_yellow(text, rate=0.001):
+    # ... (prints text in yellow with a specified printing rate)
+
+```
+
+##### Explanation:
+
+Prints text in yellow with a specified printing rate.
+
+##### display_menu Function:
+
+```py
+def display_menu():
+    # ... (displays the main menu for login)
+
+```
+
+##### Explanation:
+
+Displays the main menu for login.
+
+##### login Function:
+
+```py
+def login(user_manager):
+    # ... (takes user input for username and password)
+    return True/False
+
+```
+
+##### Explanation:
+
+Takes user input for username and password.
+Calls user_manager.login for authentication.
+
+##### create_user Function:
+
+```py
+def create_user(user_manager):
+    # ... (takes user input for a new username and password)
+
+```
+
+##### Explanation:
+
+Takes user input for a new username and password.
+Calls user_manager.create_account to create a new user.
+
+##### Main Execution (__name__ == "__main__"):
+
+```py
+if __name__ == "__main__":
+    # ... (prints colorful ASCII art)
+    user_manager = UserManager()
+    while True:
+        # ... (displays login menu and executes user choice)
+
+```
+
+##### Explanation:
+
+Initializes the Asset Management System (asset_system).
+Prints colorful ASCII art.
+Loops through the main menu after a successful login.
 
 ## **Usage**
+
 Run the program by executing ```python main.py```
 
 Choose from the following options:
@@ -200,7 +380,8 @@ Create Asset (1): Enter details for a new asset.<br>
 Read Assets (2): View a list of all assets.<br>
 Update Asset (3): Modify details of an existing asset.<br>
 Delete Asset (4): Remove a specific asset.<br>
-Exit (5): Terminate the program.
+Search Asset (5): Search for assets based on a specified criteria.<br>
+Exit (6): Terminate the program.
 
 ## **Contributing**
 Contributions to the Asset Management System are welcome. Please follow the guidelines outlined below.
