@@ -1,4 +1,6 @@
-# Asset Management System
+# **User Manual**
+
+## Asset Management System
 
 ## Introduction
 
