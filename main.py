@@ -114,7 +114,7 @@ class AssetManagementSystem:
 
             print(f"Asset '{sn}' added successfully!\n")
         except PermissionError:
-            print("Cannot access file\nPlease close your spreadsheet reader and try again!")
+            print("Cannot access file.\nPlease close(terminate) your spreadsheet reader and try again!")
 
     def is_serial_number_unique(self, serial_number):
         with open('assets.csv', 'r', newline='') as csvfile:
@@ -141,7 +141,7 @@ class AssetManagementSystem:
             self.log_activity(log_message)
             # Open in spreadsheet form
             os.startfile("assets.csv")
-            sys.exit()
+            # sys.exit()
 
         elif read_choice == "2":
             #Logging Activity
@@ -155,7 +155,7 @@ class AssetManagementSystem:
                 
             # Open in PDF format
             os.startfile("assets.pdf")
-            sys.exit()
+            # sys.exit()
 
         elif read_choice == "3":
             try:
@@ -430,7 +430,7 @@ def main():
             if confirm.strip().upper() == "Y":
                 print(f"{Fore.CYAN}Exiting the Asset Management System. Goodbye!{Style.RESET_ALL}\n")
                 print(f"{Fore.YELLOW}AMS, powered by GridCode.{Style.RESET_ALL}")
-                break
+                sys.exit()
             elif confirm.strip().upper() == "N":
                 main()
             else:
