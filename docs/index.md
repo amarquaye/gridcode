@@ -29,7 +29,7 @@ The Asset Management System is designed to provide a user-friendly interface for
 
 ## Installation
 
-To install and use the *Asset Management System*, click [here](https://github.com/amarquaye/gridcode/releases/download/v2.0.0/ams.exe).  
+To install and use the *Asset Management System*, click [here](https://github.com/amarquaye/gridcode/releases/download/v2.0.1/ams.exe).  
 
 This will take you to our release page where you'll find and download the executable.
 
